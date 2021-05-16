@@ -1,12 +1,16 @@
 import java.util.*;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
 public class Main {
+	static StringBuilder builder = new StringBuilder();
     static boolean[] c = new boolean[10];
     static int[] a = new int[10];
     static void go(int index, int n, int m) {
     	//1부터 n까지의 자연수 중에 중복없이 m개를 고르는 수열
         if (index == m) { //m개를 다 채우면 return
             for (int i=0; i<m; i++) {
-                System.out.print(a[i]);
+            	builder. a[i]);
                 if (i != m-1) System.out.print(' ');
             }
             System.out.println();

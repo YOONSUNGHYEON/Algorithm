@@ -1,7 +1,7 @@
 import java.util.*;
 public class Main {
     static int[] a = new int[10];
-    
+    static boolean[] c = new boolean[10];
     //이 함수 역할 : 수 index를 선택할지 안할지 결정해야함
     static void go(int index, int selected, int n, int m) {
     	//index : 숫자
