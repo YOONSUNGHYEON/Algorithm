@@ -1,0 +1,44 @@
+package 신규아이디추천;
+
+import java.io.IOException;
+import java.util.Scanner;
+
+public class Main {
+	public static int sum = 0;
+    public static boolean[][] check = new boolean[1501][1501];
+    public static void go(int x, int y) {
+        if (check[x][y]) return;
+        check[x][y] = true;
+        int[] a = {x, y, sum-x-y};
+        for (int i=0; i<3; i++) {
+            for (int j=0; j<3; j++) {
+                if (a[i] < a[j]) {
+                    int[] b = {x, y, sum-x-y};
+                    b[i] += a[i];
+                    b[j] -= a[i];
+                    go(b[0], b[1]);
+                }
+            }
+        }
+
+    }
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		Scanner sc = new Scanner(System.in);
+		int x = sc.nextInt();
+		int y = sc.nextInt();
+		int z = sc.nextInt();
+		sum = x + y + z;
+		if (sum % 3 != 0) { //3개의 그룹에 같은 값으로 나눠야하는데 똑같이 나눌려면 3으로 나눠떨어져야한ㄷ다.
+			System.out.println(0);
+			System.exit(0);
+		}
+		//sum에서 구한 두개를 빼면 나머지 숫자는 자련스럽게 알게되기때문에 2개의 정점만 필요
+		 go(x, y);
+		 //똑같이 나눴을 경우 배열에 가서 방문했는지만 알면됨
+		 if (check[sum/3][sum/3]) {
+	            System.out.println(1);
+	        } else {
+	            System.out.println(0);
+	        }
+	}
+}

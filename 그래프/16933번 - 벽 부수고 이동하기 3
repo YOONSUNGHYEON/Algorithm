@@ -1,0 +1,80 @@
+package 신규아이디추천;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+class Pair {
+	int x, y, z, v;
+
+	Pair(int x, int y, int z, int v) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.v = v;
+	}
+}
+
+public class Main {
+	static int[][] graph;
+	public static final int[] dx = { 1, -1, 0, 0 };
+	public static final int[] dy = { 0, 0, 1, -1 };
+	static int N, M, K;
+
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+		N = Integer.parseInt(tokenizer.nextToken());
+		M = Integer.parseInt(tokenizer.nextToken());
+		K = Integer.parseInt(tokenizer.nextToken());
+		int[][][][] d = new int[N][M][K + 1][2];
+		graph = new int[N][M];
+		for (int i = 0; i < N; i++) {
+			String s = reader.readLine();
+			for (int j = 0; j < M; j++)
+				graph[i][j] = s.charAt(j) - '0';
+		}
+		d[0][0][0][0] = 1;
+		Queue<Pair> q = new LinkedList<Pair>();
+		q.add(new Pair(0, 0, 0, 0));
+		while (!q.isEmpty()) {
+			Pair p = q.remove();
+			for (int k = 0; k < 4; k++) {
+				int nx = p.x + dx[k];
+				int ny = p.y + dy[k];
+				if (nx < 0 || nx >= N || ny < 0 || ny >= M)
+					continue;
+				// 상하좌우가 빈칸이고 && 상하좌우에 방문을 안한경우
+				if (graph[nx][ny] == 0 && d[nx][ny][p.z][1 - p.v] == 0) {
+					d[nx][ny][p.z][1 - p.v] = d[p.x][p.y][p.z][p.v] + 1;
+					q.offer(new Pair(nx, ny, p.z, 1 - p.v));
+				}
+				// 벽을 한번도 안부슨 상황이고 상하좌우 벽이 있고 방문을 안한 경우
+				if (p.v == 0 && p.z != K && graph[nx][ny] == 1 && d[nx][ny][p.z + 1][1 - p.v] == 0) {
+					d[nx][ny][p.z + 1][1 - p.v] = d[p.x][p.y][p.z][p.v] + 1; // 벽을 부슨다. z+1
+					q.offer(new Pair(nx, ny, p.z + 1, 1 - p.v));
+				}
+
+			}
+			if (d[p.x][p.y][p.z][1 - p.v] == 0) {
+				d[p.x][p.y][p.z][1 - p.v] = d[p.x][p.y][p.z][p.v] + 1;
+				q.offer(new Pair(p.x, p.y, p.z, 1 - p.v));
+			}
+		}
+		int min = N * M + 2;
+		for (int i = 0; i <= K; i++) {
+			if (d[N - 1][M - 1][i][0] != 0)
+				min = Math.min(min, d[N - 1][M - 1][i][0]);
+			if (d[N - 1][M - 1][i][1] != 0)
+				min = Math.min(min, d[N - 1][M - 1][i][1]);
+		}
+		if (min == N * M + 2)
+			System.out.println(-1);
+		else
+			System.out.println(min);
+
+	}
+}

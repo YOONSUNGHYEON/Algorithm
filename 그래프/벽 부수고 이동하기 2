@@ -1,0 +1,99 @@
+package 신규아이디추천;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.StringTokenizer;
+
+public class Main {
+	static int[][] graph;
+	public static final int[] dx = { -1, 0, 0, 1 };
+	public static final int[] dy = { 0, -1, 1, 0 };
+	static int N, M;
+	static int count = 0;
+
+	static void DFS(int condition, int r, int c, boolean[][] visited, int num) {
+		if (r < 0 || r >= N)
+			return;
+		if (c < 0 || c >= M)
+			return;
+		if (graph[r][c] != condition)
+			return;
+		if (visited[r][c])
+			return;
+		visited[r][c] = true;
+		group[r][c] = num;
+		count++;
+		DFS(condition, r - 1, c, visited, num);
+		DFS(condition, r + 1, c, visited, num);
+		DFS(condition, r, c - 1, visited, num);
+		DFS(condition, r, c + 1, visited, num);
+
+	}
+
+	static void countMap() {
+		boolean[][] visited = new boolean[N][M];
+		int num = 0;
+		for (int r = 0; r < N; ++r)
+			for (int c = 0; c < M; ++c) {
+				if (visited[r][c] == false) {
+					int condition = graph[r][c];
+					if (condition == 0) {
+						count = 0;
+						num++;
+						DFS(condition, r, c, visited, num);
+						group_count[num] = count;
+					}
+				}
+
+			}
+		return;
+	}
+
+	static int[][] group;
+	static int[] group_count;
+
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+		N = Integer.parseInt(tokenizer.nextToken());
+		M = Integer.parseInt(tokenizer.nextToken());
+		graph = new int[N][M];
+		group = new int[N][M]; // 좌표 빈칸이 어디 그룹에 들어가는지
+		group_count = new int[(N * M)+1]; // 그룹마다 갈수있는 칸 수
+		for (int i = 0; i < N; i++) {
+			String s = reader.readLine();
+			for (int j = 0; j < M; j++)
+				graph[i][j] = s.charAt(j) - '0';
+		}
+		countMap();
+		StringBuilder builder = new StringBuilder();
+
+		for (int r = 0; r < N; ++r) {
+			for (int c = 0; c < M; ++c) {
+				if (graph[r][c] == 0) {
+					builder.append("0");
+				} else if (graph[r][c] == 1) {
+					HashSet<Integer> near = new HashSet<>();
+					for (int k = 0; k < 4; k++) {
+						int nx = r + dx[k];
+						int ny = c + dy[k];
+						if (nx < 0 || nx >= N || ny < 0 || ny >= M)
+							continue;
+						if (graph[nx][ny] == 0) {
+							near.add(group[nx][ny]);
+						}
+					}
+					int ans = 1;
+					for (int g : near) {
+						ans += group_count[g];
+					}
+					builder.append(ans%10);
+				}
+			}
+			builder.append("\n");
+		}
+		System.out.println(builder);
+	}
+}

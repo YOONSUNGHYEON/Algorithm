@@ -1,0 +1,111 @@
+package 신규아이디추천;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+public class Main {
+	static boolean[][] check;
+	static int r, c;
+	static int target_r, target_c;
+	static int[] dx = { 0, 0, 1, -1 };
+	static int[] dy = { 1, -1, 0, 0 };
+	static int[][] b = new int[10][10];
+	static int[][] a = new int[10][10];
+
+	private static class Location {
+		int x;
+		int y;
+
+		public Location(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
+
+	public static int BFS() {
+		Queue<Location> will_visit = new LinkedList<>();
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				b[i][j] = a[i][j];
+				// System.out.print(a[i][j]+" ");
+				if (b[i][j] == 2) {
+					will_visit.add(new Location(i, j));
+				}
+			}
+			// System.out.println();
+
+		}
+		while (!will_visit.isEmpty()) {
+			Location current = will_visit.remove();
+			for (int i = 0; i < 4; i++) {
+				int dx_x = current.x + dx[i];
+				int dy_y = current.y + dy[i];
+				if (dx_x >= 0 && dy_y >= 0 && dx_x < N && dy_y < M) {
+					if (b[dx_x][dy_y] == 0) {
+						b[dx_x][dy_y] = 2;
+						will_visit.add(new Location(dx_x, dy_y));
+					}
+				}
+
+			}
+		}
+		int cnt = 0;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (b[i][j] == 0) {
+					cnt += 1;
+				}
+			}
+		}
+		return cnt;
+
+	}
+
+	static int max_ans = -1;
+
+	// 벽을 세우는 경우
+	public static void makeWall(int depth) {
+
+		if (depth == 3) {
+			int num = BFS();
+			//System.out.println(num);
+			if (max_ans < num)
+				max_ans = num;
+			return;
+		}
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (a[i][j] == 0) { // 빈칸인 경우
+					a[i][j] = 1; // 벽 건설
+					makeWall(depth + 1);
+					a[i][j] = 0; // 다음 경우의 수를 위해 복구
+				}
+			}
+		}
+	}
+
+
+
+	static int N, M;
+
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+		N = Integer.parseInt(tokenizer.nextToken());
+		M = Integer.parseInt(tokenizer.nextToken());
+		a = new int[10][10];
+		for (int i = 0; i < N; i++) {
+			tokenizer = new StringTokenizer(reader.readLine());
+			for (int j = 0; j < M; j++) {
+				a[i][j] = Integer.parseInt(tokenizer.nextToken());
+			}
+		}
+		makeWall(0);
+		System.out.println(max_ans);
+	}
+}
